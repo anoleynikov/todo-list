@@ -23,14 +23,14 @@ func NewStorage() (*Storage, error) {
 		tasks:  make([]*task.Task, 0),
 		nextID: 1,
 	}
-	
+
 	if err := s.load(); err != nil {
 		// Если файл не существует, это не ошибка
 		if !os.IsNotExist(err) {
 			return nil, err
 		}
 	}
-	
+
 	return s, nil
 }
 
@@ -40,18 +40,18 @@ func (s *Storage) load() error {
 	if err != nil {
 		return err
 	}
-	
+
 	if len(data) == 0 {
 		return nil
 	}
-	
+
 	var tasks []*task.Task
 	if err := json.Unmarshal(data, &tasks); err != nil {
 		return err
 	}
-	
+
 	s.tasks = tasks
-	
+
 	// Обновляем nextID
 	maxID := 0
 	for _, t := range s.tasks {
@@ -60,7 +60,7 @@ func (s *Storage) load() error {
 		}
 	}
 	s.nextID = maxID + 1
-	
+
 	return nil
 }
 
@@ -70,7 +70,7 @@ func (s *Storage) save() error {
 	if err != nil {
 		return err
 	}
-	
+
 	return os.WriteFile(storageFile, data, 0644)
 }
 
@@ -79,7 +79,7 @@ func (s *Storage) Add(title string) error {
 	newTask := task.NewTask(s.nextID, title)
 	s.tasks = append(s.tasks, newTask)
 	s.nextID++
-	
+
 	return s.save()
 }
 
@@ -119,3 +119,4 @@ func (s *Storage) Delete(id int) error {
 		}
 	}
 	return fmt.Errorf("задача с ID %d не найдена", id)
+}
